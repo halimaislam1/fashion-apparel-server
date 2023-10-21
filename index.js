@@ -1,7 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 const port = process.env.PORT || 5000;
 
@@ -37,13 +37,48 @@ async function run() {
         const result = await cursor.toArray();
         res.send(result)
     })
+
+    //update
+    app.get('/fashion/:id',async(req, res) => {
+        const id = req.params.id;
+        const query = {
+            _id: new ObjectId(id)
+        }
+        const result = await FashionCollection.findOne(query)
+        res.send(result)
+    })
     
+
     //post
     app.post('/fashion', async(req, res) => {
         const newFashion= req.body;
         console.log(newFashion);
         const result = await FashionCollection.insertOne(newFashion);
         res.send(result)
+    })
+
+    //update
+    app.put('/fashion/:id',async(req, res) => {
+        const id = req.params.id;
+        const filter = {_id: new ObjectId(id)}
+        const options = {upsert: true}
+        const updatedProduct= req.body;
+        const product = {
+            $set:{
+                name:updatedProduct.name,
+                 type:updatedProduct.type,
+                 description:updatedProduct.description,
+                 price:updatedProduct.price,
+                 rating:updatedProduct.rating,
+                 brandName:updatedProduct.brandName,
+                 photo : updatedProduct.photo
+            }
+        }
+             
+        const result = await FashionCollection.updateOne(filter,product,options);
+        console.log(result);
+        res.send(result);
+        
     })
 
 
