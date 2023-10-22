@@ -30,7 +30,8 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const FashionCollection = client.db('fashionDB').collection('fashion')
+    const FashionCollection = client.db('fashionDB').collection('fashion');
+    const cartCollection = client.db('fashionDB').collection('cart')
 
     app.get('/fashion', async(req, res) => {
         const cursor = FashionCollection.find();
@@ -49,7 +50,7 @@ async function run() {
     })
     
 
-    //post
+    //post for fashion DB
     app.post('/fashion', async(req, res) => {
         const newFashion= req.body;
         console.log(newFashion);
@@ -80,9 +81,22 @@ async function run() {
         res.send(result);
         
     })
+      
+     //Get Cart
+     app.get('/cart', async(req, res) => {
+        const cursor = cartCollection.find()
+        const result = await cursor.toArray()
+        res.send(result)
+      })
 
-
-
+     //POST For Cart DB 
+      app.post ('/cart', async(req, res) =>{
+        const cart = req.body;
+        console.log(cart);
+        const result = await cartCollection.insertOne(cart);
+        res.send(result)
+      });
+     
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
