@@ -57,6 +57,8 @@ async function run() {
         const result = await FashionCollection.insertOne(newFashion);
         res.send(result)
     })
+     
+
 
     //update
     app.put('/fashion/:id',async(req, res) => {
@@ -92,10 +94,22 @@ async function run() {
      //POST For Cart DB 
       app.post ('/cart', async(req, res) =>{
         const cart = req.body;
+        delete cart._id
         console.log(cart);
         const result = await cartCollection.insertOne(cart);
+        console.log(result);
         res.send(result)
       });
+
+      //delete
+      app.delete('/cart/:id', async(req, res) => {
+        const id = req.params.id;
+        const query = {
+            _id: new ObjectId(id)
+        }
+        const result = await cartCollection.deleteOne(query)
+        res.send(result)
+      })
      
 
     // Send a ping to confirm a successful connection
